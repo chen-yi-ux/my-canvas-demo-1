@@ -14,26 +14,44 @@
       canvas.width = document.documentElement.clientWidth;
       canvas.height = document.documentElement.clientHeight;
       let ctx = canvas.getContext("2d");
+      ctx.fillStyle = "black";
+
+      function drawLine(x1, y1, x2, y2) {
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+      }
 
       let painting = false;
 
-      ctx.fillStyle = "blue";
+      var isTouchDevice = "ontouchstart" in document.documentElement;
+      if (isTouchDevice) {
+        canvas.ontouchmove = (e) => {
+          let x = e.touches[0].clientX;
+          let y = e.touches[0].clientY;
+          ctx.beginPath();
+          ctx.arc(x, y, 10, 0, 2 * Math.PI);
+          ctx.stroke();
+          ctx.fill();
+        };
+      } else {
+        canvas.onmousedown = () => {
+          painting = true;
+        };
 
-      canvas.onmousedown = () => {
-        painting = true;
-      };
+        canvas.onmousemove = (e) => {
+          if (painting === true) {
+            drawLine(0, 0, e.clientX, e.clientY);
+          } else {
+            console.log("什么都不做");
+          }
+        };
 
-      canvas.onmousemove = (e) => {
-        if (painting === true) {
-          ctx.fillRect(e.clientX - 5, e.clientY - 5, 10, 10);
-        } else {
-          console.log("什么都不做");
-        }
-      };
-
-      canvas.onmouseup = () => {
-        painting = false;
-      };
+        canvas.onmouseup = () => {
+          painting = false;
+        };
+      }
     </script>
   </body>
 </html>
